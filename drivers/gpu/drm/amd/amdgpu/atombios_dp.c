@@ -274,6 +274,17 @@ static int amdgpu_atombios_dp_get_dp_link_config(struct drm_connector *connector
 				return 0;
 			}
 		}
+	} else {
+		for (i = 0; i < ARRAY_SIZE(link_rates) && link_rates[i] <= max_link_rate; i++) {
+			for (lane_num = 1; lane_num <= max_lane_num; lane_num <<= 1) {
+				max_pix_clock = (lane_num * link_rates[i] * 8) / bpp;
+				if (max_pix_clock >= pix_clock) {
+					*dp_lanes = lane_num;
+					*dp_rate = link_rates[i];
+					return 0;
+				}
+			}
+		}
 	}
 
 	return -EINVAL;
